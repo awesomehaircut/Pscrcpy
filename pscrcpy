@@ -1,0 +1,86 @@
+#!/bin/bash
+name="ProScreencpy"		#TODO file name
+
+title (){
+	echo "-----------------------------------------------"
+	echo "Hello and Welcome to $name (one of my scripts.)"
+	echo "_______________________________________________"
+}
+erase (){
+	for (( i=0; i<100; i++ ));
+	do
+		echo -en "\r"
+	done
+	}
+
+loading_spinner (){
+	chars="12345"
+	for (( i=0; i<${#chars}; i++ )); 
+	do
+		sleep 0.25
+		echo -en "${chars:$i:1}" "\r"
+	done
+}
+title
+erase
+loading_spinner
+
+if adb shell echo "Connecting to device"
+then
+	flags=" -S -K"
+	pkill sndcpy
+	hostx=800	        #TODO calculate based on Hosts dimensions
+	hosty=1280	        #TODO same as aboved so the phone stays in portrait mode
+	fps=25		        #TODO I think I'll set this to half as much as the hosts
+	bitrate=1600000		#TODO This should be based on the quality of the connection
+	fullscreen=true     #TODO based on how the script is launched
+	dpi=330		        #TODO Decide what looks best.
+	echo "Fullscreen set to $fullscreen"
+	if $fullscreen
+	then
+		flags="$flags -f"
+		size="$hostx""x""$hosty"
+	else
+		size="reset"
+	fi
+
+	flags="$flags -m 1280 -b $bitrate"
+else
+	echo "Didn't connect!"
+fi
+echo "Setting up device"
+adb shell wm size reset
+adb shell wm density reset
+#adb shell wm size $size
+adb shell wm density $dpi
+echo "running sdcpy and scrcpy with automatic flags:$flags"
+for (( i=0; i<${#chars}; i++ ));
+do
+	sleep 0.25
+	echo -en "${chars:$i:1}" "\r"
+done
+
+	sndcpy&
+	scrcpy $flags
+
+	echo """cleaning up"""
+	adb shell wm size reset
+	adb shell wm density reset
+	pkill sndcpy
+	echo "ctr+c to quit or wait to reconnect"
+	for (( i=0; i<${#chars}; i++ ));
+		do
+			sleep 0.5
+			echo -en "${chars:$i:1}" "\r"
+done
+    echo "Disconnected"
+fi
+
+echo	"----------------------------------------"
+echo 	" Good bye! I hope you liked this script."
+echo	"________________________________________"
+echo 	" Edit freely. Edit carefully. Edit Love."
+echo	" Questions @ scripts@awesomehaircut.xyz."
+echo	"                                        "
+echo	"________________________________________"
+
