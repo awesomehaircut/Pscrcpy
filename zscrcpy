@@ -1,16 +1,28 @@
 #!/bin/bash
 name="ProScreencpy"		#TODO file name
 
+### I'm not super sure how good bash is wit Fuctional programming 
+### With external programs it works awesome.
+### These functions are iterative not functional
+### Take no arguments, return nothing
+### Usually just print something and return 0 if ran cleanly
+
 title (){
 	echo "-----------------------------------------------"
 	echo "Hello and Welcome to $name (one of my scripts.)"
 	echo "_______________________________________________"
-}
+	return 0
+} 				
+				
 erase (){
+	### This doesn't work yet
+	### I bet I just have to change the character r to whatever 
+	### it takes to delete a line
 	for (( i=0; i<100; i++ ));
 	do
 		echo -en "\r"
 	done
+	return 0
 	}
 
 loading_spinner (){
@@ -20,22 +32,23 @@ loading_spinner (){
 		sleep 0.25
 		echo -en "${chars:$i:1}" "\r"
 	done
+	return 0
 }
-title
-erase
-loading_spinner
+title 				#TODO I don't understand functions in bash yet
+erase         #TODO This literally does nothing but it should erase. IDK WHY
+loading_spinner			#This works!?
 
 if adb shell echo "Connecting to device"
 then
 	flags=" -S -K"
 	pkill sndcpy
-	hostx=800	        #TODO calculate based on Hosts dimensions
-	hosty=1280	        #TODO same as aboved so the phone stays in portrait mode
+	hostx=1080		#TODO same as aboved so the phone stays in portrait mode
+	hosty=1920		#TODO calculate based on Hosts dimensions
 	fps=25		        #TODO I think I'll set this to half as much as the hosts
 	bitrate=1600000		#TODO This should be based on the quality of the connection
-	fullscreen=true     #TODO based on how the script is launched
-	dpi=330		        #TODO Decide what looks best.
-	echo "Fullscreen set to $fullscreen"
+	dpi=440		        #TODO Decide what looks best.
+	
+	fullscreen=true		#TODO based on how the script is launched
 	if $fullscreen
 	then
 		flags="$flags -f"
@@ -44,14 +57,14 @@ then
 		size="reset"
 	fi
 
-	flags="$flags -m 1280 -b $bitrate"
+	flags="$flags -m $hostx -b $bitrate"
 else
 	echo "Didn't connect!"
 fi
 echo "Setting up device"
 adb shell wm size reset
 adb shell wm density reset
-#adb shell wm size $size
+adb shell wm size $size
 adb shell wm density $dpi
 echo "running sdcpy and scrcpy with automatic flags:$flags"
 for (( i=0; i<${#chars}; i++ ));
@@ -74,7 +87,6 @@ done
 			echo -en "${chars:$i:1}" "\r"
 done
     echo "Disconnected"
-fi
 
 echo	"----------------------------------------"
 echo 	" Good bye! I hope you liked this script."
